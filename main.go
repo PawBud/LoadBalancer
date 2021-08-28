@@ -7,6 +7,17 @@ import (
 	"net/url"
 )
 
+var (
+	serverList = []string{
+		"http://127.0.0.1:5001",
+		"http://127.0.0.1:5002",
+		"http://127.0.0.1:5003",
+		"http://127.0.0.1:5004",
+		"http://127.0.0.1:5005",
+	}
+	lastServedIndex = 0
+)
+
 func main()  {
 	http.HandleFunc("/",forwardRequest)
 	log.Fatal(http.ListenAndServe(":8888", nil))
@@ -15,10 +26,13 @@ func main()  {
 func forwardRequest(res http.ResponseWriter, req *http.Request){
 	url := getServer()
 	rProxy := httputil.NewSingleHostReverseProxy(url)
+	log.Printf("Routing the request to the URL: %s", url.String())
 	rProxy.ServeHTTP(res, req)
 }
 
 func getServer() *url.URL {
-	url, _ := url.Parse("http://127.0.0.1:4000")
+	nextIndex := (lastServedIndex+1)%len(serverList)
+	url, _ := url.Parse(serverList[lastServedIndex])
+	lastServedIndex = nextIndex
 	return url
 }

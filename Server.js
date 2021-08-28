@@ -1,9 +1,11 @@
 const http = require('http');
 
+const port = process.argv[2];
+
 const requestListener = function (req, res) {
     res.writeHead(200);
-    res.end('Server 1');
+    res.end('Server Started!!');
 }
 
 const server = http.createServer(requestListener);
-server.listen(4000);
+server.listen(`${port}`);
