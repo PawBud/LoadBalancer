@@ -3,17 +3,15 @@ package main
 import (
 	"log"
 	"net/http"
-	"net/http/httputil"
-	"net/url"
 )
 
 var (
-	serverList = []string{
-		"http://127.0.0.1:5001",
-		"http://127.0.0.1:5002",
-		"http://127.0.0.1:5003",
-		"http://127.0.0.1:5004",
-		"http://127.0.0.1:5005",
+	serverList = []*server{
+		newServer("http://127.0.0.1:5001"),
+		newServer("http://127.0.0.1:5002"),
+		newServer("http://127.0.0.1:5003"),
+		newServer("http://127.0.0.1:5004"),
+		newServer("http://127.0.0.1:5005"),
 	}
 	lastServedIndex = 0
 )
@@ -24,15 +22,13 @@ func main()  {
 }
 
 func forwardRequest(res http.ResponseWriter, req *http.Request){
-	url := getServer()
-	rProxy := httputil.NewSingleHostReverseProxy(url)
-	log.Printf("Routing the request to the URL: %s", url.String())
-	rProxy.ServeHTTP(res, req)
+	server := getServer()
+	server.ReverseProxy.ServeHTTP(res, req)
 }
 
-func getServer() *url.URL {
+func getServer() *server {
 	nextIndex := (lastServedIndex+1)%len(serverList)
-	url, _ := url.Parse(serverList[lastServedIndex])
+	server := serverList[lastServedIndex]
 	lastServedIndex = nextIndex
-	return url
+	return server
 }
