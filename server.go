@@ -23,14 +23,15 @@ func newServer(urlStr string) *server{
 	}
 }
 
-func (s *server) serverStatus() {
+func (s *server) serverStatus() bool{
 	resp, err := http.Head(s.URL)
 	if err != nil{
 		log.Println(err)
 	}
 	if resp.StatusCode != http.StatusOK {
 		s.isActive = false
-		return
+		return s.isActive
 	}
 	s.isActive = true
+	return s.isActive
 }

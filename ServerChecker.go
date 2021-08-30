@@ -8,6 +8,11 @@ import (
 func startServerCheck() {
 	s:= gocron.NewScheduler(time.Local)
 	for _, server := range serverList {
-		s.Every(2).Second().Do(server.serverStatus)
+		s.Every(2).Second().Do(func (){
+			sStatus := server.serverStatus
+			if sStatus() {
+
+			}
+		})
 	}
 }
