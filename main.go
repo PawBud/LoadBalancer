@@ -37,7 +37,7 @@ func getActiveServer() (*server, error){
 			return server, nil
 		}
 	}
-	return nil, fmt.Errorf("No Active Servers Remaining!!")
+	return nil, fmt.Errorf("no active servers remaining")
 }
 
 func getServer() *server {
