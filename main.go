@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -22,8 +23,21 @@ func main()  {
 }
 
 func forwardRequest(res http.ResponseWriter, req *http.Request){
-	server := getServer()
+	server, err := getActiveServer()
+	if err != nil {
+		fmt.Fprintf(res, "Couldn't process the request: %s", err.Error())
+	}
 	server.ReverseProxy.ServeHTTP(res, req)
+}
+
+func getActiveServer() (*server, error){
+	for i:=0; i<len(serverList); i++ {
+		server := getServer()
+		if server.isActive {
+			return server, nil
+		}
+	}
+	return nil, fmt.Errorf("No Active Servers Remaining!!")
 }
 
 func getServer() *server {
